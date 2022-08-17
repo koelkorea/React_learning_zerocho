@@ -17,15 +17,17 @@ const { Component } = React;
 class WordRelay extends Component {
     
     state = {
-
+        text: 'Hello, Webpack!',
     };
 
     render() {
-
+        return <h1>{this.state.text}</h1>;
     }
 
 }
 
-// (중요) 웹팩을 통해 컴포넌트 파일을 개별로 쪼갤경우 해당 코드는 필수적으로 들어가야 함  
-//  -> 이 코드가 존재해야... 타 jsx 파일에서 해당 파일과 정의된 컴포넌트를 불러서 쓸수가 있기 때문!
+// (중요) 웹팩(webpack.config.js)을 통해, 컴포넌트 파일을 개별로 쪼갤 경우 'module.exports = 클래스명' 코드는 필수적으로 들어가야 함  
+//  -> 이 코드가 존재해야... 타 jsx 파일에서 정의해 둔 컴포넌트를 불러서 쓸수가 있기 때문! 
+//     (거기 있는 module.exports 프로퍼티를 근거로 jsx들을 하나하나 합치는 것)
+//      -> EX) require('./WordRelay')
 module.exports = WordRelay;

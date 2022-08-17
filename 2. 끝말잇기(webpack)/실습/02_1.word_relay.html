@@ -26,7 +26,7 @@
     //      -> -D의 의미 : 개발때만 쓸 것 = 설정파일 모은 package.json에 dependencies에 떨어져있음
     //  5. package.json, package-lock.json 이 보일 것
     //  6. webpack.config.js를 만들고, module.exports = { } 입력
-    //  7. client.jsx를 생성하고, 다음 코드를 입력
+    //  7. client.jsx (js가 아니라 extension이 가능한.. 그러니까 리엑트 전용임을 암시)를 생성하고, 다음 코드를 입력
     //
     //      (react, react-dom 클래스 호출.. java의 import 클래스명을 node.js 버전으로)
     //      const React = require('react');
@@ -35,7 +35,7 @@
     //      (client.jsx의 목적인 컴포넌트 실제 render될 컴포넌트와 DOM위치 지정 코드)
     //      ReactDom.render(<WordRelay />, document.querySelector("#root"));
     //
-    //  8. 컴포넌트명.jsx를 생성하고, 다음 코드를 입력
+    //  8. 컴포넌트명.jsx (js가 아니라 extension이 가능한.. 그러니까 리엑트 전용임을 암시)를 생성하고, 다음 코드를 입력
     //
     //      const React = require('react');
     //      const { Component } = React;    // 단순히 extends React.Component -> Component로 축약
@@ -59,6 +59,7 @@
     //      const WordRelay = require('./컴포넌트명');
     //
     //  10. webpack.config.js를 생성하고 프로퍼티들을 입력해서, webpack을 통해 합본 js가 만들어지게 한다
+    //      (웹팩을 쓰는 이유 : html에서 한줄의 script 태그에서 불러올 수 있는 파일은 1개 단위이기 때문)
     //      -> 자세한 내용을 webpack.config.js에 들어가서 보자
 
     //      (jsx들을 연결해주는 module.exports의 프로퍼티를 체우는 것을 주 목적)
@@ -71,6 +72,23 @@
     //          output : { path :'파일위치 경로명 입력', filename : '최종파일명.확장자'},
     //      };
 
+    //  11. 터미널에 목표하는 폴더로 이동해서 webpack이라고 치면, webpack.config.js의 module.exports -> output 프로퍼티에서 정의한 path경로에 '최종파일명.확장자'인 jsx합본 js파일이 만들어진다.
+    //      -> (중요) 'webpack: command not found' 가 뜨는 경우 : webpack이 node.js 내에 명령어로 등록되어 있지 않다는 것 의미
+    //                  -> 해결법(2번 추천)
+    //                       1. node에서 명령어로 등록해 주기
+    //                       2. package.json 파일의 script란에 "명령어이름" : webpack이라고 적은 후, 터미널에 'npm run 명령어이름'이라고 터미널에 입력
+    //                       3. npx webpack 터미널에 입력
+
+    //  12. 터미널에서 node.js가 깔린 폴더로 이동 후, npm i -D @babel/core @babel/preset-env @babel/preset-react babel-loader (따로 입력해도 된다) 입력
+    //      : html이 jsx를 읽지 못하여 나오는 에러 해결을 위해 babel이 필요하기에, node.js를 통해 babel 컴파일러 패키지를 설치해 babel과 react 같이 쓰게 한다 
+    //        (잘 깔리면, package.json에 bebel 관련 내용이 나온다)
+    //          -> @babel/core                             : babel 기본 파일 들어있음
+    //             @babel/preset-env                       : 최신문법 -> 구 브라우저 호환용 예전 문법으로 변환기능
+    //             @babel/preset-react                     : jsx를 babel에서도 인식하여 컴파일해 줌 (= react에 babel 사용 가능) 
+    //             @babel/plugin-proposal-class-properties : 클래스 컴포넌트를 babel이 변환하기 위해 필요한 플러그인.. 없으면 webpack이 제대로 동작하지 않음 (필요하면 경고함.. 근데 왜 난 모르지?)
+    //             babel-loader                            : babel과 webpack 연결하는 기능             
+
+    //  13. webpack.config.js에 module를 통해 babel을 어떤 파일에 적용할지에 대한 구체적인 조건을 적는다
 
         const React = require('react');
         const ReactDom = require('react-dom');
