@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>끝말잇기 react로 만들기(class 컴포넌트) - WebPack</title>
+</head>
+<body>
+    <div id = "root"></div>
+    <script src = "./dist/app.js">
+
+    // [Webpack] : 여러개의 js파일을 하나의 js파일로 묶어주는 일종의 '모듈 번들러'라고 불리는 시스템
+    
+    // (Webpack을 사용하는 이유?)
+    //  : 컴포넌트가 ㅈㄴ게 많아서, 그냥 html에 코드로 풀면, 몇만줄이 되어버리는 문제 발생
+    //      -> src속성을 통해 js를 가져온다? 너무 많으면, 그거 적는 코드만 몇백줄이 되는 사태 발생
+    //          -> 그런 잡다한 js를 하나로 합친다? profit!
+    //              -> 그렇게 js마다 들어가는 중복코드도 다 빼버리는게 쌉가능함
+
+    // (webpack 환경 설정) <- Node(js 실행기..)를 설치하는 것부터 시작해서 터미널에서 작업해야 하는데, 상세한 명령어는 웹에 널려있고, 간략하게 과정을 적음
+    //  1. node 다운로드 후 설치 + IDE 터미널에 GIT을 BASH기본으로..
+    //  2. npm init -> 설정파일 입력.. 뭐 대충 입력 후 y 누르자 
+    //  3. npm i react react-dom : react와 react-dom 라이브러리를 설치
+    //  4. npm i -D webpack webpack-cli : webpack과 webpack-cli(클라이언트로 4.0부터 무조건 필요하다 캄)
+    //      -> -D의 의미 : 개발때만 쓸 것 = 설정파일 모은 package.json에 dependencies에 떨어져있음
+    //  5. package.json, package-lock.json 이 보일 것
+    //  6. webpack.config.js를 만들고, module.exports = { } 입력
+    //  7. client.jsx (js가 아니라 extension이 가능한.. 그러니까 리엑트 전용임을 암시)를 생성하고, 다음 코드를 입력
+    //
+    //      (react, react-dom 클래스 호출.. java의 import 클래스명을 node.js 버전으로)
+    //      const React = require('react');
+    //      const ReactDom = require('react-dom');
+    //
+    //      (client.jsx의 목적인 컴포넌트 실제 render될 컴포넌트와 DOM위치 지정 코드)
+    //      ReactDom.render(<WordRelay />, document.querySelector("#root"));
+    //
+    //  8. 컴포넌트명.jsx (js가 아니라 extension이 가능한.. 그러니까 리엑트 전용임을 암시)를 생성하고, 다음 코드를 입력
+    //
+    //      const React = require('react');
+    //      const { Component } = React;    // 단순히 extends React.Component -> Component로 축약
+    //
+    //      (컨포넌트 내용)
+    //      class WordRelay extends Component {    
+    //          state = {
+
+    //          };
+
+    //          render() {
+
+    //          }
+    //      }
+
+    //      (추후 웹팩을 통해, client.jsx와 합본으로 구성된 js파일을 생성하는 코드)
+    //      module.exports = 컴포넌트명;
+    //
+    //  9. client.jsx에 다음 코드를 통해, 컴포넌트명.jsx를 호출하게 끔 함
+    //
+    //      const WordRelay = require('./컴포넌트명');
+    //
+    //  10. webpack.config.js를 생성하고 프로퍼티들을 입력해서, webpack을 통해 합본 js가 만들어지게 한다
+    //      (웹팩을 쓰는 이유 : html에서 한줄의 script 태그에서 불러올 수 있는 파일은 1개 단위이기 때문)
+    //      -> 자세한 내용을 webpack.config.js에 들어가서 보자
+
+    //      (jsx들을 연결해주는 module.exports의 프로퍼티를 체우는 것을 주 목적)
+    //      module.exports = {
+    //          name : 안 중요함,
+    //          mode : 'development'(개발), 'production'(실서비스),
+    //          devtool : 안 중요함,
+    //          resolve : { extensions : [합체명단 파일 확장자 생략용] },
+    //          entry : { app : [합체 원하는 파일 원본명 및 위치] },
+    //          output : { path :'파일위치 경로명 입력', filename : '최종파일명.확장자'},
+    //      };
+
+    //  11. 터미널에 목표하는 폴더로 이동해서 webpack이라고 치면, webpack.config.js의 module.exports -> output 프로퍼티에서 정의한 path경로에 '최종파일명.확장자'인 jsx합본 js파일이 만들어진다.
+    //      -> (중요) 'webpack: command not found' 가 뜨는 경우 : webpack이 node.js 내에 명령어로 등록되어 있지 않다는 것 의미
+    //                  -> 해결법(2번 추천)
+    //                       1. node에서 명령어로 등록해 주기
+    //                       2. package.json 파일의 script란에 "명령어이름" : webpack이라고 적은 후, 터미널에 'npm run 명령어이름'이라고 터미널에 입력
+    //                       3. npx webpack 터미널에 입력
+
+    //  12. 터미널에서 node.js가 깔린 폴더로 이동 후, npm i -D @babel/core @babel/preset-env @babel/preset-react babel-loader (따로 입력해도 된다) 입력
+    //      : html이 jsx를 읽지 못하여 나오는 에러 해결을 위해 babel이 필요하기에, node.js를 통해 babel 컴파일러 패키지를 설치해 babel과 react 같이 쓰게 한다 
+    //        (잘 깔리면, package.json에 bebel 관련 내용이 나온다)
+    //          -> @babel/core                             : babel 기본 파일 들어있음
+    //             @babel/preset-env                       : 최신문법 -> 구 브라우저 호환용 예전 문법으로 변환기능
+    //             @babel/preset-react                     : jsx를 babel에서도 인식하여 컴파일해 줌 (= react에 babel 사용 가능) 
+    //             @babel/plugin-proposal-class-properties : 클래스 컴포넌트를 babel이 변환하기 위해 필요한 플러그인.. 없으면 webpack이 제대로 동작하지 않음 (필요하면 경고함.. 근데 왜 난 모르지?)
+    //             babel-loader                            : babel과 webpack 연결하는 기능             
+
+    //  13. webpack.config.js에 module를 통해 babel을 어떤 파일에 적용할지에 대한 구체적인 조건을 적는다
+    </script>
+</body>
+</html>

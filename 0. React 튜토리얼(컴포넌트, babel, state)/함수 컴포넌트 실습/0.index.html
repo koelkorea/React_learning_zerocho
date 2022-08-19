@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React 기초-2(함수 컴포넌트)</title>
+
+    <!-- React는 왜 사용하는가? -> JS에서 SPA 개발을 가능하게 하는 라이브러리(혹은 프레임워크)기 때문
+
+        # SPA(single page Application)
+            : (용량이 큰) 어떤 웹 사이트의 전체 페이지를 하나의 페이지에 담아 'Virtual DOM'이라는 개념을 통해 동적으로 화면을 바꿔가며 표현
+                -> IF 변경이 필요하다면? 최초 로드된 페이지에서 필요한 부분만 변경되어 템플릿만 교체됨
+                    (= 실시간 DOM 변경을 통한 변경으로 성능 떨어짐 최소화 + 나중에 단 한번만 브라우저를 호출해 변화 구현)
+
+        # SPA의 특징
+            - 화면 깜빡임이 없다..
+            - 사용자 인터페이스, 사용자 경험등이 좋아진다.
+            - 데이터 처리를 쉽게하기 위해서 사용
+            - 재활용 가능한 웹 컴포넌트를 만듦
+
+        # Virtual DOM : 실제 DOM 트리를 흉내 낸 가상의 객체 트리
+                        ->  이점1. 이를 통해 실제 DOM은 실시간으로 변화하지 않아도 됨, 
+                            이점2. 나중에 모든 변경값을 저장한 VDOM의 정보를 통해, 모든 변경요소를 담은 DOM정보를 한번의 브라우저 호출로 구현
+                            이점3. 불필요한 상호작용으로 인한 잦은 DOM조작이 최소화됨 = 빠르고 효율적인 동적 웹 구축가능
+
+        # React의 장점
+        1) SPA 결과물을 통한 사용자 경험
+        2) 재사용 컴포넌트 (중복되는 요소들을 하나로 묶어줄 수 있다.)
+        3) 데이터-화면 일치
+    -->
+
+    <!-- React 라이브러리를 연결하는 CDN 방식 : 인터넷이 연결이 되는 곳에서만 아래코드(React) 가능하게 하는 라이브러리 주소)가 적용  -->
+    <!-- 주의: 사이트를 배포할 때는 "development.js"를 "production.min.js"로 대체해야 함 -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!-- crossorigin의 의미 : A라는 Origin(Domain과 다르게 프로토콜과 포트번호까지 포함)을 통해 작동하는 앱이 B라는 Origin 서버와 HTTP 요청을 통해 상호 접근을 가능하게 하겠다는 선언 --> 
+    <!--                      -> (해석) A오리진 - 앱(HTTP) - B오리진 : 해당 구조를 통해 이 앱은 다수의 주소 내용을 참고하여 앱이 유기적으로 작동 가능하게 됨       -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- babel.js(https://babeljs.io/): React와는 별개의 자바스크립트 es6 문법(혹은 실험적 최신문법들)을 es5로 변환해주는 트렌스파일러(transpiler) -->
+    <!--            => React를 일반 브라우저에서 실행 가능하게 하도록 하는 매개체 정도로 인식하면 됨                                         -->
+</head>
+<body>
+    <div id = "root"></div> <!-- 코드 실행 결과 : <div id = "root"><button>Like</button></div>-->
+
+    <!--react 가이드의 like_button.js에 해당하는 내용 -->
+    <!-- type = "text/babel" : babel을 활용하여 react코드를 일반 브라우저에서 돌아가게 함  -->
+    <script type = "text/babel">
+        'use strict';
+
+        // 컴포넌트 : element(요소노드) 단위의 js와 다르게, react에서 객체를 정의하는 방식
+
+        // (1) CLASS 개념의 컴포넌트 : 말 그대로, CLASS처럼 멤버변수와 메서드 형식으로 정의되고 구성된 컴포넌트... 생각보다 번거롭고 복잡해서 React측에서는 정작 추천 안 함
+        //      -> (중요) React에서는 DOM의 속성으로 CLASS를 사용할 수 없다! (CLASS 컴포넌트에서 사용하는 예약어)
+        //                  -> 대신, className으로 속성을 넣을 수 있음
+
+        // (2) FUNCTION(함수) 개념의 컴포넌트
+
+        // [2.1] (순수) Functional component = 함수 컴포넌트
+        //  : 멤버변수(프로퍼티) + 멤버메서드 형식으로 결합된 class 형식과 다르게, 말 그대로, 변수는 변수대로 함수는 함수대로 독립적으로 선언되는 방식으로 구현된 컴포넌트
+        //     - class 컴포넌트의 멤버변수 -> 외부의 전역변수로서 선언 
+        //     - class 컴포넌트의 메서드 -> 함수형으로 선언(전역변수를 통해 구현)
+        //  => (특징) 구현하는데 있어 단순하고 간편함!
+        //          -> BUT! 다소 객체지향스러운 개념이 내포되어 있어, 다음의 2가지 개념은 Functional component에서 사용할 수 없음
+        //                  a. '클래스 컴포넌트'의 내부변수인 state값을 입력하는 setState()
+        //                  b. DOM요소에 '클래스 컴포넌트'의 멤버변수값을 참조하게 해주는 ref속성
+        //                  -> (결론) 예전에는 setState()와 ref속성을 쓰지 않는 경우에 한정해서만, Functional component 사용하였음
+
+        // [2.2] Functional component WITH Hooks = 함수 컴포넌트 (가장 recommanded한 방식)
+        //  : But, 함수형 컴포넌트 프로그래밍 특유의 단순간편성에 맛들인 개발자들이..
+        //         Functional component에도 setState(), ref속성을 쓸 수 있도록 하여, 기능과 간편함 다 잡게 해달라고 요구..
+        //          -> 그 요청을 받아들인 결과가 'React Hooks'의 탄생!
+        //              1) state 구현 : 최신 js 문법인 구조분해(Destructuring) 할당을 통해 state값 이름과 set메서드 관여 & useState() 통한 state값 사용선언
+        //              2) ref 구현 : useRef(초기값)를 통해 js상의 변수에 ref속성값으로 사용되도록 만들고, 해당 JS변수가 사용된 메서드를 통해 DOM요소 통제가능
+        //          -> 결론적으로 함수에서 return한 값이 출력값 = return 내용이 곧 프론트단에서의 출력될 화면(이걸로 화면내용 상호작용)
+        
+        //function LikeButton() {
+        const LikeButton = () => {  // arrow함수로 짜면 this를 쓸 필요가 없다
+
+            // [hooks 관여 1. Destructuring & useState() 통한 state값 사용선언] 
+            //  : '구조분해' 할당을 통한 [변수명, set변수명]을 통한 배열로 일관적인 state 접근가능하게 구조를 짜고 & useState를 통해 해당 변수명을 state값으로 사용 선언
+
+            // Q : Hooks를 통해, 어떻게 Functional 컴포넌트에서 setState()와 같이 state값 변경에 관여하는가?
+            //  -> A : 구조분해(Destructuring) 할당을 통해 state값 이름과 set메서드 관여 + React.useState(초기값)을 통해 해당 state 프로퍼티의 초기값을 지정
+
+            // [구조분해 문법 적용 전]
+            // const result = React.useState(false);
+            // const liked = result[0];
+            // const setLiked = result[1];
+
+            // [구조분해 문법 적용 후]
+            const [liked, setLiked] = React.useState(false);
+
+            // (중요!) 
+            // 함수형 컴포넌트와 Hook의 구조분해적 변수 선언을 통해 state변수들이 전역변수로 선언되었음으로
+            // -> 이후 this.state.변수명은 쓰지 않음 (상단의 [hooks 관여 1] 참고)
+
+
+            // 함수의 return값은 최종 출력값 = 그렇게 변하는 화면 변화 감지가능
+            if (liked) {
+                return 'you would like it! ';
+            }
+
+            return (
+                <button onClick = { () => { setLiked(true); } }> Like </button>
+            );
+
+            // boolean값을 통한 변화말고 useState()의 파라미터 값을 '배열'로 둬서 다양한 통제도 가능하다
+            
+            // (예시1) 
+            const [test, setTest] = useState( [ '값1', '값2', '......', '값N' ] );
+
+            if (test == '값1') {
+                return '값1에 해당하는 화면코드';
+            } else if(test == '값2') {
+                return '값2에 해당하는 화면코드';
+            } else {
+                return '값N에 해당하는 화면코드';
+            };
+
+            // 이런거는 웹페이지들의 흐름을 react식으로 훈련하는 방법을 통해, react적인 코드로 구현할 수 있도록 발상하는 능력을 키우면 됨
+        };
+
+    </script>
+    <script type = "text/babel">
+        // ReactDOM : 앱의 최상위 레벨에서 사용할 수 있는 DOM에 특화된 메서드 + 필요한 경우 React 모델 외부로 나갈 수 있는 해결책을 제공하는 패키지
+        //            (js의 최상위 객체 windows와 비슷한 느낌)
+
+        // (신 18) ReactDOM.createRoot(DOM위치값).render(React.createElement(컴포넌트명) or 이를 정의한 변수 or HTML(jsx도 가능할지도)코드[, 콜백함수명(생략가능) ] )
+        // (구 17) ReactDOM.render(React.createElement(컴포넌트명) or 이를 정의한 변수 or HTML(jsx도 가능할지도)코드, DOM위치값 [, 콜백함수명(생략가능) ] )
+        // : React 요소노드명 지정된 DOM 위치에 렌더링(콜백 함수가 있다면, 그 참조값도 반환함)
+        //      -> if 해당 위치에 이미 렌더링된 요소가 존재?
+        //          -> 내용을 최신화하여 업데이트 후 필요한 내용만 따로 변경(= 필요한 부분만 빠르고 효율적으로 변경 <- 이것이 리엑트가 존재하는 이유)  
+        
+        // 코딩법1. 매개변수에 React.createElement(컴포넌트명)를 직접 사용
+        //  : 이를 원하는 컴포넌트를 기입하여 랜더링
+
+        // 코딩법2. <컴포넌트명 />과 같은 HTML(jsx도 가능할지도)코드 형식 
+        //  : 앞서 선언된 클래스명(컴포넌트명)을 통해. HTML(XML)의 element(요소)를 선언하듯 사용하여 랜더링
+        //      -> (장점) 컴포넌트 하나의 정보를 통해, 한번에 여러가지 요소노드를 선언 가능함 (컴포넌트 = 클래스, 컴포넌트노드 = 객체)
+
+        ReactDOM.createRoot( document.querySelector('#root') ).render(  <div> <LikeButton /><LikeButton /><LikeButton /><LikeButton /> </div> );
+
+        // ReactDOM.render( <div> <LikeButton /><LikeButton /><LikeButton /><LikeButton /> </div>, document.querySelector('#root')); // 17버전 구코드
+
+    </script>
+</body>
+</html>
