@@ -61,7 +61,12 @@
         //          -> 그 요청을 받아들인 결과가 'React Hooks'의 탄생!
         //              1) state 구현 : 구조분해(Destructuring) 할당을 통해 state값 이름과 set메서드 관여 & useState() 통한 state값 사용선언
         //              2) ref 구현 : useRef(초기값)를 통해 js상의 변수에 ref속성값으로 사용되도록 만들고, 해당 JS변수가 사용된 메서드를 통해 DOM요소 통제가능
-        //          -> 결론적으로 함수에서 return한 값이 출력값 = return 내용이 곧 프론트단에서의 출력될 화면(이걸로 화면내용 상호작용) 
+
+        //          [hooks의 장점1]
+        //          -> 결론적으로 함수에서 return한 값이 출력값 = return 내용이 곧 프론트단에서의 출력될 화면(이걸로 class컴포넌트와 다르게 내부 메서드 없이 화면내용 상호작용)
+
+        //  (중요) [hooks의 장점2]
+        //  : hooks 사용시 arrow함수로 짜면 this를 쓸 필요가 없다 (= hooks를 쓰면 this랑 졸업해도 됨!)
         const GuGuDan = () => {
             
             // [hooks 관여 1. Destructuring & useState() 통한 state값 사용선언] 
@@ -138,7 +143,9 @@
                     setValue('');
 
                     // 앞서 선언한 React.useRef(초기값)을 통해 접근한 DOM요소의 위치값에 속성내용 추가해서 컴포넌트에 관여
-                    inputRef.current.focus();
+
+                    // (중요) React.useRef(초기값).current.메서드() : hooks에서 ref속성 사용시 DOM조작을 위해서는 current를 반드시 써야함
+                    inputRef.current.focus();   
 
                 }else{
                     setResult(first + '*' + second + ' = ' + value
@@ -151,10 +158,20 @@
             };
 
             // [hooks의 단점]
-            // : 한번 state값의 변화가 감지될 때마다 통째로 함수 컴포넌트 전체를 재실행하여 랜더링함 = 속도가 좀 느릴 수 있다
-            //  -> 하지만 state값들을 개별 변수에 저장했다쳐도, 이들은 랜더링시 비동기 함수로 움직이기에, 결과적으로 dom에 모든 변경이 반영된 단 한번의 변경만 적용 (= Virtual Dom의 이점) 
+            //  1. 한번 state값의 변화가 감지될 때마다 통째로 함수 컴포넌트 전체를 재실행하여 랜더링함 = 속도가 좀 느릴 수 있다
+            //      -> 하지만 state값들을 개별 변수에 저장했다쳐도, 이들은 랜더링시 비동기 함수로 움직이기에, 결과적으로 dom에 모든 변경이 반영된 단 한번의 변경만 적용 (= Virtual Dom의 이점) 
+            //  2. hooks에서 ref속성 사용시 DOM조작을 위해서는 current를 반드시 써야함
             console.log("랜더링");
 
+            // [hooks의 장점 정리]
+            //  1. hooks를 통해 함수 컴포넌트를 사용하면, class가 아닌 script변수에서 선언한 무명메서드처럼 작성이 가능
+            //     -> 결론적으로 함수에서 return한 값이 출력값 = return 내용이 곧 프론트단에서의 출력될 화면
+            //        (이걸로 class컴포넌트와 다르게 내부 메서드 없이 화면내용 상호작용)
+            //  2. hooks 사용시 arrow함수로 짜면 this를 쓸 필요가 없다 (= hooks를 쓰면 this랑 졸업해도 됨!)
+            //  3. state값 관리가 쉽다
+
+            // hooks를 사용하여 함수 컴포넌트를 사용하면, class가 아닌 script변수에서 선언한 무명메서드처럼 작성이 가능
+            //  = 따로 메서드 선언없이 return문을 통해 html + jsx 화면내용에 대한 코드를 출력가능 
             return (
                 <React.Fragment>
                     <div>[Hook를 사용해 함수 컴포넌트로 구현한 구구단]</div>
