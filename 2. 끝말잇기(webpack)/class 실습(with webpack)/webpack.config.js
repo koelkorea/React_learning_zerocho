@@ -3,7 +3,8 @@
 
 // output의 기본경로를 위해 선언(node.js 기본 탑재)
 const path = require('path');   // require('클래스명 or 파일명') 자체가 node.js의 문법
-const webpack = require('webpack'); // plugin에 있는 녀석이 해당 변수를 쓰니 필요
+const webpack = require('webpack'); // plugin에 있는 녀석이 해당 변수를 쓰니 webpack에 대한 라이브러리 import시키는 개념
+const RefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'); // webpack 개발서버에서 react코드 hot reloading을 가능케 하는 플러그인 import 시키는 개념
 
 // : 타 jsx에서 'module.exports = 컴포넌트명'으로 선언된 코드들의 실질적 작동은 여기서 정의된대로 수행
 module.exports = {
@@ -54,7 +55,10 @@ module.exports = {
                                 debug : true,
                             } ],    
                             '@babel/preset-react'],
-                plugins : ['@babel/plugin-proposal-class-properties']
+
+                            // (17이후 추가)
+                            // react-refresh/babel : babel이 작동할 때 hot reloading(서버에 코드 바뀐거 실시간 반영하여 작업)기능도 추가함
+                plugins : ['@babel/plugin-proposal-class-properties', 'react-refresh/babel', ]
             }
         }],
     },
@@ -65,16 +69,38 @@ module.exports = {
         //   : 상단 module의 loader 항목에 쓰이는 option - preset의 각 항목의 모든 debug 속성의 설정은 true(작동)으로 변경 
         //     (이게 아니면 일일히  debug : true 넣어야함)
         new webpack.LoaderOptionsPlugin( { debug : true } ),
+
+        // (17이후 추가)
+        // - new RefreshWebpackPlugin()
+        //   : webpack 개발서버 관련 플러그인에 대한 내용을 객체화시켜 불러옴
+        new RefreshWebpackPlugin(),
     ],
 
     // (중요) output는 [출력]될 jsx파일(합치고 난 뒤에 생성된 jsx파일명) 의미 
-    //  : output 내부는  합체 후 생성될 js파일명이 위치할 경로를 입력해주면 됨 
+    //  : output 내부는 합체 후 생성될 js파일명이 위치할 경로를 입력해주면 됨 
+    //     -> path       : 파일들이 생성될 실제 경로 (절대 경로)
+    //        filename   : webpack을 통해 생성될 파일명
+    //        publicPath : webpack-server 배포 빌드 할 때, 서버가 생성 및 사용하는 결과물(css, html, 플러그인 등)들이 위치한 하는 가상 경로 (상대 경로)
     output : {
         //  path.join(__dirname, '폴더명')
         //   : 현재 폴더경로(__dirname)에 '폴더명'을 합친 경로를 만들어주는 편한 path 클래스의 메서드
         //     ex) __dirname = C:\면, C:\dist
         path : path.join(__dirname, 'dist'),
         filename : 'app.js',
+        publicPath: '/dist',
     }, 
 
+    // (현재 webpack dev server 4.x 버전과 @pmmmwh 플러그인 5.x 버전의 변경사항 내용 적용)
+    // devServer : 프론트엔트 개발서버 관련 설정 의미 (webpack을 통한 빌드의 결과물(소스코드)의 변경점을 감지하고 이를 서비스에 수정 반영해주는 hot reloading 기능 존재)
+    //     -> hot            : hot reloading 기능 발동여부를 boolean값으로 입력
+    //        static         : 실제로 존재하는 정적파일들이 위치하는 곳의 경로 설정을 여기서 함 (단! xml 방식으로 { directory : ~~ }안에 추가함)
+    //        devMiddleware  : 나중에서 webpack이 생성해주는 파일들이 위치하는 (개발서버에서는) 메모리 저장 경로 설정을 여기서 함 (단! xml 방식으로 { publicPath : ~~ }안에 추가함)
+    //                          -> 애초에 서버와 배포 빌드 관련된 경로인 publicPath의 존재에 영향을 받을 수 밖에 없음
+    devServer : {
+        devMiddleware: { publicPath : '/dist' },
+        //  path.resolve(__dirname, './폴더명 or 폴더명')
+        //   : 현재 폴더경로(__dirname)에 '폴더명'을 합친 경로를 만들어주지만, 오른쪽에서 부터 읽을때 폴더가 감지되면 바로 반환... 상대경로일 경우 왼쪽의 경로에 포함시켜 출력
+        static: { directory: path.resolve(__dirname) },
+        hot: true
+    },
 };
