@@ -1,3 +1,12 @@
+// [react에서 input 태그 내 속성과 state변수 작성법 (controlled input VS uncontrolled unput)]
+//  -> 해당 문서는 controlled input으로 작성 (= 구조분해 할당을 통한 외부의 '함수형 컴포넌트 state 변수' 존재)
+
+// - controlled input <-> uncontrolled unput 
+//  (특징)   : 구조분해 할당을 통한 외부의 '함수형 컴포넌트 state 변수'를 state 변수가 onchange 이벤트를 통해 value의 속성값으로 jsx형식으로 통제(controlled)한다.
+//              -> uncontrolled의 경우는 '함수형 컴포넌트 state 변수' 사용X -> onchange, value 속성도 X
+//  (사용처) : 복잡한 페이지 제작에 사용됨 <-> uncontrolled의 경우는 간단한 페이지 제작에 사용
+
+
 // 컴포넌트명.jsx 
 //  :  이 녀석은 사실상 개별 컴포넌트를 정의하는 용도로 사용
 //     (= 컴포넌트의 수만큼 jsx의 수도 늘어난다고 보면 OK)
@@ -38,7 +47,7 @@ const WordRelay = () => {
     //     result: '',
     // };
 
-    // (신) hooks 사용 함수 컴포넌트 코드(구조분해 문법 적용)
+    // (신) hooks 사용 함수 컴포넌트 코드(구조분해 문법 적용) = controlled input식 적용
     const [word, setWord] = useState('승호');
     const [value, setValue] = useState('');
     const [result, setResult] = useState('');
@@ -132,10 +141,12 @@ const WordRelay = () => {
     //     );
     // };
 
-    // (신) hooks 함수 컴포넌트 코드
+    // (신) hooks 함수 컴포넌트 코드 
     //   : 해당 WordRelay 변수 내 반환값을 화면으로서 html + jsx 문법을 통해 출력
     //      -> 이를 통해 state값이나 함수가 발동되어 화면에 변동이 생기면, return되는 출력문이 바뀌는 방식 (hooks의 장점 1번 참고)
 
+    // controlled input 방식
+    //  : 구조분해 할당을 통한 외부의 '함수형 컴포넌트 state 변수'를 state 변수가 onchange 이벤트를 통해 value의 속성값으로 jsx형식으로 통제(controlled)한다.
     return (
         <>
             <div>{word}</div>
