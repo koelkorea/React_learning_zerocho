@@ -15,4 +15,6 @@ const ReactDom = require('react-dom');
 const WordRelay = require('./WordRelay');
 
 // jsx확장자의 좋은점 : 쓰면 사실상 react용 파일이라는걸 예측가능
-ReactDom.render(<WordRelay />, document.querySelector("#root"));
+ReactDOM.createRoot(document.querySelector('#root')).render( <WordRelay /> ); 
+
+// ReactDom.render(<WordRelay />, document.querySelector("#root"));     // (구) 17버전 코드

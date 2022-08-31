@@ -15,4 +15,6 @@ const ReactDom = require('react-dom');
 const Gugudan = require('./GuGuDan');
 
 // jsx확장자의 좋은점 : 쓰면 사실상 react용 파일이라는걸 예측가능
-ReactDom.render(<Gugudan />, document.querySelector("#root"));
+ReactDOM.createRoot(document.querySelector('#root')).render( <GuGuDan /> ); 
+
+//  ReactDOM.render(<GuGuDan />, document.querySelector('#root'));  // 17버전 구코드
